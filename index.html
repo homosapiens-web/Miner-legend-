@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>礦工傳說 - 覺醒</title>
+    <title>礦工傳說 - 史詩探索</title>
     <style>
         :root { 
             --hp: #2ecc71; --mp: #3498db; --en: #e74c3c; --bg: #0d0d0d;
@@ -14,7 +14,7 @@
         html, body { 
             background: #000; color: #fff; font-family: 'Courier New', Courier, monospace; 
             overflow: hidden; height: 100%; width: 100%; user-select: none;
-            overscroll-behavior: none; /* 防止下拉更新等行為 */
+            overscroll-behavior: none;
         }
 
         #game { 
@@ -51,8 +51,7 @@
         }
         
         #minimap-container.expanded {
-            position: fixed; 
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             width: 80vw; height: 80vw; max-width: 350px; max-height: 350px;
             border: 4px solid #f1c40f; box-shadow: 0 0 0 100vmax rgba(0,0,0,0.8);
             border-radius: 12px; z-index: 9999;
@@ -71,18 +70,34 @@
         .w { background-color: #222; }
         .empty { background-color: #1a1a1a; }
         .d { background-color: var(--dirt); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1 1h1v1H1zM5 2h1v1H5zM2 5h1v1H2zM6 6h1v1H6z' fill='%234e342e'/%3E%3C/svg%3E"); }
+        /* 基礎石 */
         .s { background-color: var(--stone); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M0 0h8v8H0z' fill='%237f8c8d'/%3E%3Cpath d='M1 1h2v1H1zm4 1h2v1H5zM2 4h3v1H2zm4 2h1v1H6zM1 6h2v1H1z' fill='%2395a5a6'/%3E%3C/svg%3E"); }
-        
+        /* 堅硬石 Lv3 */
+        .s3 { background-color: #555; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M0 0h8v8H0z' fill='%23555'/%3E%3Cpath d='M1 1h2v1H1zm4 1h2v1H5zM2 4h3v1H2zm4 2h1v1H6zM1 6h2v1H1z' fill='%23333'/%3E%3Cpath d='M0 2l3 3 2-1 3 4' stroke='%23222' fill='none'/%3E%3C/svg%3E"); }
+        /* 極硬石 Lv4 */
+        .s4 { background-color: #2c3e50; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M0 0h8v8H0z' fill='%232c3e50'/%3E%3Cpath d='M1 1h2v1H1zm4 1h2v1H5zM2 4h3v1H2zm4 2h1v1H6zM1 6h2v1H1z' fill='%231a252f'/%3E%3Cpath d='M0 1l4 4 1-2 3 5M8 0L3 5' stroke='%23000' fill='none'/%3E%3C/svg%3E"); }
+
         /* 實體、物件 */
         .entity { position: absolute; top:0; left:0; width:100%; height:100%; background-size: 80%; background-repeat: no-repeat; background-position: center; pointer-events: none; z-index: 2;}
         .player { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='1' width='4' height='2' fill='%232ecc71'/%3E%3Crect x='3' y='3' width='2' height='2' fill='%23e0c097'/%3E%3Crect x='2' y='5' width='4' height='3' fill='%233498db'/%3E%3C/svg%3E"); transform: scale(1.2); }
-        .en-slime { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 4h4v1H1v3h6V5H6V4H2z' fill='%23e74c3c'/%3E%3Crect x='2' y='5' width='1' height='1' fill='white'/%3E%3Crect x='5' y='5' width='1' height='1' fill='white'/%3E%3C/svg%3E"); animation: bounce 0.8s infinite alternate; }
         
         .stair { background-color: #2c3e50; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h6v1H1zm1 2h5v1H2zm1 2h4v1H3zm1 2h3v1H4z' fill='%2300ffff'/%3E%3C/svg%3E"); }
         .merchant { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='2' y='1' width='4' height='4' fill='%238e44ad'/%3E%3Crect x='3' y='2' width='2' height='2' fill='%23f1c40f'/%3E%3Crect x='1' y='5' width='6' height='3' fill='%232c3e50'/%3E%3C/svg%3E"); }
         .campfire { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 0h2v4H3z' fill='%23e74c3c'/%3E%3Cpath d='M2 2h4v3H2z' fill='%23e67e22'/%3E%3Cpath d='M1 6h6v2H1z' fill='%238e44ad'/%3E%3C/svg%3E"); }
         
+        /* 怪物外觀 */
+        .en-slime { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 4h4v1H1v3h6V5H6V4H2z' fill='%23e74c3c'/%3E%3Crect x='2' y='5' width='1' height='1' fill='white'/%3E%3Crect x='5' y='5' width='1' height='1' fill='white'/%3E%3C/svg%3E"); }
+        .en-bat { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 2l2 2 2-1 2 1 2-2v2L6 5 4 6 2 5 0 4z' fill='%238e44ad'/%3E%3Crect x='3' y='4' width='1' height='1' fill='red'/%3E%3Crect x='4' y='4' width='1' height='1' fill='red'/%3E%3C/svg%3E"); }
+        .en-goblin { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2h4v4H2z' fill='%232ecc71'/%3E%3Cpath d='M0 3h2v1H0zm6 0h2v1H6z' fill='%2327ae60'/%3E%3Crect x='3' y='3' width='1' height='1' fill='black'/%3E%3Crect x='4' y='3' width='1' height='1' fill='black'/%3E%3C/svg%3E"); }
+        .en-orc { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h6v6H1z' fill='%23d35400'/%3E%3Crect x='2' y='3' width='1' height='1' fill='white'/%3E%3Crect x='5' y='3' width='1' height='1' fill='white'/%3E%3Crect x='2' y='6' width='1' height='2' fill='white'/%3E%3Crect x='5' y='6' width='1' height='2' fill='white'/%3E%3C/svg%3E"); }
+        .en-golem { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 0h6v8H1z' fill='%237f8c8d'/%3E%3Crect x='2' y='2' width='4' height='1' fill='%23e74c3c'/%3E%3C/svg%3E"); }
+        .en-dragon { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 0h2v2H3zM2 2h4v4H2z' fill='%23c0392b'/%3E%3Cpath d='M0 2h2v3H0zm6 0h2v3H6z' fill='%23e74c3c'/%3E%3Crect x='3' y='3' width='2' height='1' fill='yellow'/%3E%3C/svg%3E"); }
+        
+        .mob-anim { animation: bounce 0.8s infinite alternate; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-4px); } }
+        
+        .elite { filter: drop-shadow(0 0 6px #f1c40f); transform: scale(1.3) !important; animation: pulseElite 1s infinite alternate; }
+        @keyframes pulseElite { from { filter: drop-shadow(0 0 6px #f1c40f) brightness(1); } to { filter: drop-shadow(0 0 12px #f1c40f) brightness(1.3); } }
 
         /* 礦石通用裝飾 */
         .ore { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect x='1' y='1' width='2' height='2' fill='currentColor'/%3E%3Crect x='5' y='2' width='2' height='2' fill='currentColor'/%3E%3Crect x='2' y='5' width='3' height='2' fill='currentColor'/%3E%3C/svg%3E"); }
@@ -92,13 +107,12 @@
         /* 控制區 */
         #ctrls { height: 180px; background: #111; display: flex; justify-content: space-around; align-items: center; border-top: 2px solid #333; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
         
-        /* 搖桿防選取、防手勢 */
         .joy { display: grid; grid-template-areas: ". u ." "l d r"; gap: 8px; touch-action: none; user-select: none; }
         .j-btn { width: 55px; height: 55px; background: #2c3e50; border: 2px solid #34495e; color: #ecf0f1; display: flex; justify-content: center; align-items: center; font-size: 20px; border-radius: 12px; border-bottom-width: 4px; touch-action: none; cursor: pointer; }
         .j-btn:active, .j-btn.pressed { background: #34495e; border-bottom-width: 2px; transform: translateY(2px); }
         
-        .side-btns { display: flex; flex-direction: column; gap: 10px; }
-        .round-btn { height: 50px; width: 50px; border-radius: 50%; border: 2px solid #f1c40f; background: #2c3e50; color: #fff; font-weight: bold; font-size: 13px; display: flex; justify-content: center; align-items: center; box-shadow: 0 3px #b8970b; }
+        .side-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 110px; }
+        .round-btn { height: 50px; width: 100%; border-radius: 8px; border: 2px solid #f1c40f; background: #2c3e50; color: #fff; font-weight: bold; font-size: 13px; display: flex; justify-content: center; align-items: center; box-shadow: 0 3px #b8970b; }
         .round-btn:active { box-shadow: 0 0px #b8970b; transform: translateY(3px); }
 
         /* 戰鬥畫面 */
@@ -141,14 +155,17 @@
         <div class="modal">
             <div id="msg-title" style="font-size: 18px; font-weight:bold; color:#f1c40f; text-align:center; margin-bottom: 12px; border-bottom: 1px solid #444; padding-bottom:8px;"></div>
             <div id="msg-content" style="font-size:14px; margin-bottom:15px; line-height:1.5; color:#ddd;"></div>
-            <div id="msg-btns" style="display:grid; gap:8px;"></div>
+            <div id="msg-btns" style="display:grid; grid-template-columns: 1fr; gap:8px;"></div>
         </div>
     </div>
 
     <div id="start-sc" class="screen active" style="justify-content:center; align-items:center;">
-        <h1 style="color:#f1c40f; font-size: 40px; text-shadow: 0 4px #b8970b; margin-bottom: 20px;">礦工傳說<br><span style="font-size: 20px; color:#e74c3c;">覺醒版</span></h1>
-        <p style="color:#bbb; font-size:13px; margin-bottom: 40px; text-align: center; line-height: 1.8;">方向鍵支援「長按連續移動」<br>升級系統實裝、地圖已新增樓梯指引！</p>
-        <button onclick="startGame()" style="width:60%; font-size:18px; background:#2980b9; border-bottom-color:#1c5980;">開始挖掘</button>
+        <h1 style="color:#f1c40f; font-size: 40px; text-shadow: 0 4px #b8970b; margin-bottom: 20px;">礦工傳說<br><span style="font-size: 20px; color:#e74c3c;">史詩探索版</span></h1>
+        <p style="color:#bbb; font-size:13px; margin-bottom: 40px; text-align: center; line-height: 1.8;">技能無限生成、裝備系統大修<br>新增多種怪物、精英怪與存檔功能！</p>
+        <div style="display:flex; gap:10px; width:80%;">
+            <button onclick="startGame()" style="flex:1; font-size:18px; background:#2980b9; border-bottom-color:#1c5980;">新遊戲</button>
+            <button onclick="loadGame()" style="flex:1; font-size:18px; background:#27ae60; border-bottom-color:#1e8449;">讀取進度</button>
+        </div>
     </div>
 
     <div id="map-sc" class="screen">
@@ -176,7 +193,6 @@
         
         <div id="grid-box"><div id="grid"></div></div>
         
-        <!-- 加入 onpointerdown 等事件來支援長按移動 -->
         <div id="ctrls">
             <div class="joy">
                 <div class="j-btn" style="grid-area: u" onpointerdown="startMove(0,-1, this)" onpointerup="stopMove(this)" onpointerleave="stopMove(this)">▲</div>
@@ -187,6 +203,7 @@
             <div class="side-btns">
                 <button class="round-btn" onclick="openCraft()">裝備</button>
                 <button class="round-btn" onclick="openStatus()">狀態</button>
+                <button class="round-btn" style="grid-column: span 2; background:#8e44ad; border-color:#9b59b6; box-shadow: 0 3px #6c3483;" onclick="openSystem()">系統</button>
             </div>
         </div>
     </div>
@@ -198,7 +215,7 @@
                 <div class="bar-outer" style="width:70%; margin:0 auto; height:10px;"><div id="hp-en-f" class="bar-fill" style="background:var(--en)"></div></div>
             </div>
             <div class="enemy-container">
-                <div class="sprite en-slime" id="enemy-sprite"></div>
+                <div class="sprite mob-anim en-slime" id="enemy-sprite"></div>
             </div>
         </div>
         <div class="bars">
@@ -211,21 +228,20 @@
         <div class="btns" id="battle-btns">
             <button onclick="battleAction('atk')">揮劍</button>
             <button onclick="openSkills()" style="background:#8e44ad; border-bottom-color:#5b2c6f;">技能</button>
-            <button onclick="usePotion()" style="background:#27ae60; border-bottom-color:#1e8449;">道具</button>
+            <button onclick="openItems()" style="background:#27ae60; border-bottom-color:#1e8449;">道具</button>
             <button onclick="battleAction('run')" style="background:#7f8c8d; border-bottom-color:#2c3e50;">逃跑</button>
         </div>
     </div>
 </div>
 
 <script>
-    // --- 礦石資料設定 (大幅調整顏色對比與出現層數) ---
+    // --- 礦石資料設定 (大幅調整銀、鐵外觀對比) ---
     const ORES = {
-        // bg 為礦石塊的底色，c 為點綴的顏色，保證一眼辨認
         coal: { id:'coal', n:"煤炭", c:"#111111", bg:"#444444", req:1, d:1, val: 2 },
         copper: { id:'copper', n:"銅礦", c:"#f39c12", bg:"#a04000", req:1, d:1, val: 5 },
-        iron: { id:'iron', n:"鐵礦", c:"#ffffff", bg:"#7f8c8d", req:2, d:2, val: 12 },
-        silver: { id:'silver', n:"銀礦", c:"#e0e0e0", bg:"#5f6a6a", req:3, d:3, val: 30 }, // 提早到第3層
-        gold: { id:'gold', n:"金礦", c:"#f1c40f", bg:"#9a7d0a", req:4, d:5, val: 80 },  // 提早到第5層
+        iron: { id:'iron', n:"鐵礦", c:"#bdc3c7", bg:"#34495e", req:2, d:2, val: 12 },   // 鐵：深藍灰底、偏白礦點
+        silver: { id:'silver', n:"銀礦", c:"#ffffff", bg:"#95a5a6", req:3, d:3, val: 30 }, // 銀：亮銀白底、純白礦點，對比超明顯
+        gold: { id:'gold', n:"金礦", c:"#f1c40f", bg:"#9a7d0a", req:4, d:5, val: 80 },
         crystal: { id:'crystal', n:"水晶", c:"#00ffff", bg:"#0e6655", req:5, d:8, val: 200 }
     };
     
@@ -239,17 +255,28 @@
         { id: 6, n: "星辰礦", c: "#f5f6fa", d: 70, req: 8 }
     ];
 
-    const p = { 
-        lv: 1, exp: 0, maxExp: 20, // 新增等級系統
-        hp: 100, mHp: 100, mp: 50, mMp: 50,
-        x: 0, y: 0, floor: 1,
-        inv: { coal:0, copper:0, iron:0, silver:0, gold:0, crystal:0, mat:0, potions:3, legends:[], coins: 0 },
-        gear: { pick: 1, lamp: 1, sword: 1 },
-        baseAtk: 10, baseDef: 2,
-        skills: [
-            { id: 'h1', n:"重擊", cost:10, pwr:1.5, type:'atk' }
-        ]
-    };
+    const MONSTERS_DB = [
+        { id: 'slime', n: '史萊姆', minF: 1 },
+        { id: 'bat', n: '地穴蝙蝠', minF: 3 },
+        { id: 'goblin', n: '哥布林', minF: 8 },
+        { id: 'orc', n: '半獸人', minF: 15 },
+        { id: 'golem', n: '遠古石魔', minF: 25 },
+        { id: 'dragon', n: '地底幼龍', minF: 40 }
+    ];
+
+    let p = {};
+    function initPlayerData() {
+        p = { 
+            lv: 1, exp: 0, maxExp: 20,
+            hp: 100, mHp: 100, mp: 50, mMp: 50,
+            x: 0, y: 0, floor: 1, lastShopFloor: 0,
+            inv: { coal:0, copper:0, iron:0, silver:0, gold:0, crystal:0, mat:0, potions:3, mp_potions:1, legends:[], coins: 0 },
+            gear: { pick: 1, lamp: 1, sword: 1 },
+            baseAtk: 10, baseDef: 2,
+            skills: [ { id: 'h1', n:"重擊", cost:10, pwr:1.5, type:'atk' } ],
+            shopSkills: []
+        };
+    }
 
     const SIZE = 30; 
     const VIEW_SIZE = 11;
@@ -260,41 +287,58 @@
     let currentEnemy = null;
     let campfireBuilt = false;
     let mapExpanded = false;
-
-    // 長按移動相關
     let moveTimer = null;
 
-    function startMove(dx, dy, btn) {
-        btn.classList.add('pressed');
-        if(moveTimer) clearInterval(moveTimer);
-        move(dx, dy); // 按下先走一步
-        moveTimer = setInterval(() => move(dx, dy), 180); // 持續走
+    // --- 存檔系統 ---
+    function saveGame() {
+        localStorage.setItem('minerLegendEpicSave', JSON.stringify(p));
+        showMsg("系統", "遊戲進度已成功儲存！");
     }
 
-    function stopMove(btn) {
-        btn.classList.remove('pressed');
-        if(moveTimer) {
-            clearInterval(moveTimer);
-            moveTimer = null;
+    function loadGame() {
+        let saved = localStorage.getItem('minerLegendEpicSave');
+        if(saved) {
+            try {
+                p = JSON.parse(saved);
+                // 相容舊存檔沒有 MP 藥水
+                if(p.inv.mp_potions === undefined) p.inv.mp_potions = 0;
+                generateFloor(); 
+                showScreen('map-sc'); 
+                showMsg("系統", "成功讀取進度！回到第 " + p.floor + " 層。");
+            } catch(e) { showMsg("系統", "存檔損毀！"); }
+        } else {
+            showMsg("系統", "找不到任何存檔。");
         }
     }
 
-    // --- 系統初始化 ---
-    function startGame() { 
-        p.lv=1; p.exp=0; p.maxExp=20;
-        p.hp=100; p.mHp=100; p.mp=50; p.mMp=50; p.floor=1; p.baseAtk=10; p.baseDef=2;
-        p.inv = { coal:0, copper:0, iron:0, silver:0, gold:0, crystal:0, mat:0, potions:3, legends:[], coins: 0 };
-        p.gear = { pick: 1, lamp: 1, sword: 1 };
-        p.skills = [ { id: 'h1', n:"重擊", cost:10, pwr:1.5, type:'atk' } ];
-        generateFloor(); 
-        showScreen('map-sc'); 
+    function openSystem() {
+        let html = `
+            <button onclick="saveGame()" style="width:100%; margin-bottom:10px; background:#2980b9;">儲存進度</button>
+            <button onclick="location.reload()" style="width:100%; background:#c0392b;">回主畫面 (未存檔進度將遺失)</button>
+        `;
+        showCustomModal("系統選單", html, [{t:"關閉", f:closeMsg}]);
     }
 
+    // --- 移動控制 ---
+    function startMove(dx, dy, btn) {
+        btn.classList.add('pressed');
+        if(moveTimer) clearInterval(moveTimer);
+        move(dx, dy); 
+        moveTimer = setInterval(() => move(dx, dy), 180); 
+    }
+    function stopMove(btn) {
+        btn.classList.remove('pressed');
+        if(moveTimer) { clearInterval(moveTimer); moveTimer = null; }
+    }
+
+    function startGame() { 
+        initPlayerData(); generateShopSkills(1);
+        generateFloor(); showScreen('map-sc'); 
+    }
     function showScreen(id) { 
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); 
         document.getElementById(id).classList.add('active'); 
     }
-
     function toggleMinimap(e) {
         if(e) e.stopPropagation();
         mapExpanded = !mapExpanded;
@@ -303,62 +347,85 @@
         else mc.classList.remove('expanded');
     }
 
-    // --- 地圖與怪物生成 ---
+    // --- 隨機技能生成 ---
+    function generateShopSkills(floor) {
+        let tier = Math.floor(floor / 10) + 1;
+        let adjs = ["熾熱", "冰霜", "狂暴", "雷霆", "暗影", "神聖", "劇毒", "虛空", "大地", "疾風"];
+        let nouns = ["斬擊", "衝擊", "爆破", "光束", "風暴", "打擊", "波動"];
+        let types = ["atk", "atk_heal", "heal"];
+        
+        let generated = [];
+        for(let i=0; i<3; i++) {
+            let adj = adjs[Math.floor(Math.random()*adjs.length)];
+            let noun = nouns[Math.floor(Math.random()*nouns.length)];
+            let t = types[Math.floor(Math.random()*types.length)];
+
+            let pwr = 1.0 + (tier * 0.6) + (Math.random()*0.8);
+            let cost = tier * 15 + Math.floor(Math.random()*15);
+            let price = tier * 100 + Math.floor(Math.random()*80);
+            
+            let desc = t==='atk' ? `造成 ${pwr.toFixed(1)} 倍強大傷害` : (t==='heal' ? `恢復大量生命` : `攻擊並吸收生命`);
+
+            generated.push({
+                id: `gen_${tier}_${i}_${Date.now()}`,
+                n: `${adj}的${noun}`, desc: desc, cost: cost, price: price, type: t, pwr: parseFloat(pwr.toFixed(2)), heal: tier*60
+            });
+        }
+        return generated;
+    }
+
+    // --- 地圖生成 ---
     function generateFloor() {
         map = Array(SIZE).fill().map(() => Array(SIZE).fill('s'));
         explored = Array(SIZE).fill().map(() => Array(SIZE).fill(false));
-        enemies = [];
-        campfireBuilt = false;
+        enemies = []; campfireBuilt = false;
+
+        // 生成新商店技能
+        if (p.floor % 10 === 0 && p.lastShopFloor !== p.floor) {
+            p.shopSkills = generateShopSkills(p.floor);
+            p.lastShopFloor = p.floor;
+        } else if (p.floor === 1 && p.shopSkills.length === 0) {
+            p.shopSkills = generateShopSkills(1);
+        }
 
         if (p.floor % 10 === 0) {
-            // 據點層
-            for(let y=10; y<=20; y++) {
-                for(let x=10; x<=20; x++) map[y][x] = 'empty';
-            }
+            for(let y=10; y<=20; y++) for(let x=10; x<=20; x++) map[y][x] = 'empty';
             p.x = 15; p.y = 19;
-            map[12][15] = 'merchant';
-            map[15][12] = 'campfire';
-            map[15][18] = 'stair_down';
-            explored[15][18] = true; // 直接標示樓梯
+            map[12][15] = 'merchant'; map[15][12] = 'campfire'; map[15][18] = 'stair_down';
+            explored[15][18] = true; 
         } else {
-            // 醉漢走路挖洞
             let digX = Math.floor(SIZE/2), digY = Math.floor(SIZE/2);
             p.x = digX; p.y = digY;
-            let dugCount = 0;
-            let pathTiles = [];
+            let dugCount = 0; let pathTiles = [];
             
-            let stoneRatio = Math.min(0.9, 0.3 + (p.floor * 0.01));
+            let stoneRatio = Math.min(0.95, 0.4 + (p.floor * 0.015));
             for(let y=1; y<SIZE-1; y++){
                 for(let x=1; x<SIZE-1; x++){
-                    map[y][x] = Math.random() < stoneRatio ? 's' : 'd';
+                    if(Math.random() < stoneRatio) {
+                        // 深層產生堅硬岩石
+                        let r2 = Math.random();
+                        if(p.floor >= 15 && r2 < 0.15) map[y][x] = 's4';
+                        else if(p.floor >= 5 && r2 < 0.25) map[y][x] = 's3';
+                        else map[y][x] = 's';
+                    } else {
+                        map[y][x] = 'd';
+                    }
                 }
             }
 
-            // 擴大挖掘面積，讓地圖更充實
             while(dugCount < 350) {
-                if(map[digY][digX] !== 'empty') {
-                    map[digY][digX] = 'empty';
-                    pathTiles.push({x: digX, y: digY}); 
-                }
+                if(map[digY][digX] !== 'empty') { map[digY][digX] = 'empty'; pathTiles.push({x: digX, y: digY}); }
                 let dir = Math.floor(Math.random()*4);
-                // 嚴格限制不要挖到最邊緣，防止樓梯被牆壁覆蓋
-                if(dir==0 && digY > 2) digY--;
-                else if(dir==1 && digY < SIZE-3) digY++;
-                else if(dir==2 && digX > 2) digX--;
-                else if(dir==3 && digX < SIZE-3) digX++;
+                if(dir==0 && digY > 2) digY--; else if(dir==1 && digY < SIZE-3) digY++; else if(dir==2 && digX > 2) digX--; else if(dir==3 && digX < SIZE-3) digX++;
                 dugCount++;
             }
             
             for(let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) map[p.y+dy][p.x+dx] = 'empty';
             
-            // 放置樓梯，並強制清空周圍
-            map[digY][digX] = 'stair_down';
-            explored[digY][digX] = true; // 強制在小地圖上揭露樓梯位置！
-            for(let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) {
-                if(map[digY+dy][digX+dx] !== 'stair_down') map[digY+dy][digX+dx] = 'd';
-            }
+            map[digY][digX] = 'stair_down'; explored[digY][digX] = true; 
+            for(let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) { if(map[digY+dy][digX+dx] !== 'stair_down') map[digY+dy][digX+dx] = 'd'; }
 
-            // 撒礦石 (機率提高，並依照新的出現層數)
+            // 撒礦石
             for(let y=1; y<SIZE-1; y++){
                 for(let x=1; x<SIZE-1; x++){
                     if(map[y][x] === 'empty') continue;
@@ -372,110 +439,96 @@
                 }
             }
 
-            // 傳說礦石
             let uncollected = LEGENDS.filter(l => !p.inv.legends.includes(l.id) && p.floor >= l.d);
             if (uncollected.length > 0 && Math.random() < 0.15) {
-                let rx = Math.floor(Math.random()*(SIZE-4))+2;
-                let ry = Math.floor(Math.random()*(SIZE-4))+2;
-                map[ry][rx] = 'L' + uncollected[0].id;
+                let rx = Math.floor(Math.random()*(SIZE-4))+2; let ry = Math.floor(Math.random()*(SIZE-4))+2; map[ry][rx] = 'L' + uncollected[0].id;
             }
 
-            // 怪物生成 (數量大幅增加！)
+            // 怪物生成
             pathTiles.sort(() => Math.random() - 0.5); 
-            let mobCount = 6 + Math.floor(p.floor / 1.5);
+            let mobCount = 8 + Math.floor(p.floor / 1.5);
             let spawned = 0;
+            
+            let validMobs = MONSTERS_DB.filter(m => p.floor >= m.minF);
+            
             for(let i=0; i<pathTiles.length && spawned < mobCount; i++) {
                 let pt = pathTiles[i];
-                if(Math.abs(pt.x - p.x) > 4 || Math.abs(pt.y - p.y) > 4) { 
-                    let hpMult = 1 + (p.floor * 0.15);
-                    enemies.push({ x: pt.x, y: pt.y, hp: Math.floor(40*hpMult), maxHp: Math.floor(40*hpMult), atk: Math.floor(10*hpMult) });
+                if(Math.abs(pt.x - p.x) > 5 || Math.abs(pt.y - p.y) > 5) { 
+                    let mobTemplate = validMobs[Math.floor(Math.random() * validMobs.length)];
+                    let isElite = Math.random() < 0.10; // 10% 精英怪
+                    
+                    let hpMult = 1 + (p.floor * 0.25);
+                    let atkMult = 1 + (p.floor * 0.20);
+                    if(isElite) { hpMult *= 1.8; atkMult *= 1.5; }
+                    
+                    enemies.push({ 
+                        x: pt.x, y: pt.y, hp: Math.floor(40*hpMult), maxHp: Math.floor(40*hpMult), atk: Math.floor(10*atkMult),
+                        typeId: mobTemplate.id, name: isElite ? `精英 ${mobTemplate.n}` : mobTemplate.n, isElite: isElite
+                    });
                     spawned++;
                 }
             }
         }
         
-        // 畫邊界牆
         for(let i=0; i<SIZE; i++) { map[0][i] = 'w'; map[SIZE-1][i] = 'w'; map[i][0] = 'w'; map[i][SIZE-1] = 'w'; }
         
-        // 雙重保險：如果樓梯莫名其妙不見了，補一個
         let stairExist = false;
         for(let y=0; y<SIZE; y++) for(let x=0; x<SIZE; x++) if(map[y][x] === 'stair_down') stairExist = true;
         if(!stairExist && p.floor % 10 !== 0) {
             let placed = false;
             for(let y=2; y<SIZE-2 && !placed; y++) for(let x=2; x<SIZE-2 && !placed; x++) {
-                if(map[y][x] === 'empty' && (Math.abs(x-p.x)>5 || Math.abs(y-p.y)>5)) {
-                    map[y][x] = 'stair_down'; explored[y][x] = true; placed = true;
-                }
+                if(map[y][x] === 'empty' && (Math.abs(x-p.x)>5 || Math.abs(y-p.y)>5)) { map[y][x] = 'stair_down'; explored[y][x] = true; placed = true; }
             }
         }
-
         updateUI(); drawView();
     }
 
-    function getOreData(tile) {
-        if(tile.startsWith('o_')) return ORES[tile.substring(2)];
-        return null;
-    }
+    function getOreData(tile) { if(tile.startsWith('o_')) return ORES[tile.substring(2)]; return null; }
 
     function getReqPick(tile) {
         if (tile === 'd') return 1;
         if (tile === 's') return 2; 
+        if (tile === 's3') return 3;
+        if (tile === 's4') return 4;
         let ore = getOreData(tile);
         if (ore) return ore.req;
-        if (tile.startsWith('L')) {
-            let leg = LEGENDS.find(l => l.id === parseInt(tile.substring(1)));
-            return leg ? leg.req : 99;
-        }
+        if (tile.startsWith('L')) return LEGENDS.find(l => l.id === parseInt(tile.substring(1)))?.req || 99;
         return 99; 
     }
 
-    // --- 繪製畫面與小地圖 ---
+    // --- 繪圖邏輯 ---
     function drawView() {
-        const grid = document.getElementById('grid');
-        grid.innerHTML = '';
-        let half = Math.floor(VIEW_SIZE / 2);
-        let lightR = p.gear.lamp;
+        const grid = document.getElementById('grid'); grid.innerHTML = '';
+        let half = Math.floor(VIEW_SIZE / 2); let lightR = p.gear.lamp;
 
         for(let cy = 0; cy < VIEW_SIZE; cy++) {
             for(let cx = 0; cx < VIEW_SIZE; cx++) {
-                let mx = p.x - half + cx;
-                let my = p.y - half + cy;
-                
-                let cell = document.createElement('div');
-                cell.className = 'cell';
+                let mx = p.x - half + cx, my = p.y - half + cy;
+                let cell = document.createElement('div'); cell.className = 'cell';
 
                 if(mx>=0 && mx<SIZE && my>=0 && my<SIZE) {
                     let dist = Math.max(Math.abs(mx - p.x), Math.abs(my - p.y));
                     if (dist <= lightR) {
-                        explored[my][mx] = true; 
-                        let tile = map[my][mx];
+                        explored[my][mx] = true; let tile = map[my][mx];
                         
                         if(tile.startsWith('o_')) {
-                            let ore = getOreData(tile);
-                            cell.classList.add('ore'); 
-                            cell.style.color = ore.c; // 點綴色
-                            cell.style.backgroundColor = ore.bg; // 獨立底色，絕對不會認錯！
+                            let ore = getOreData(tile); cell.classList.add('ore'); 
+                            cell.style.color = ore.c; cell.style.backgroundColor = ore.bg;
                         } else if(tile.startsWith('L')) {
                             cell.classList.add('legend-ore'); cell.style.color = LEGENDS.find(l=>l.id===parseInt(tile.substring(1))).c;
-                        } else if(tile === 'stair_down') {
-                            cell.classList.add('stair'); 
-                        } else {
-                            cell.classList.add(tile);
-                        }
+                        } else if(tile === 'stair_down') { cell.classList.add('stair'); 
+                        } else { cell.classList.add(tile); }
 
-                        if (mx === p.x && my === p.y) {
-                            let div = document.createElement('div'); div.className = 'entity player'; cell.appendChild(div);
-                        }
+                        if (mx === p.x && my === p.y) { let div = document.createElement('div'); div.className = 'entity player'; cell.appendChild(div); }
+                        
                         let en = enemies.find(e => e.hp > 0 && e.x === mx && e.y === my);
                         if (en) {
-                            let div = document.createElement('div'); div.className = 'entity en-slime'; cell.appendChild(div);
+                            let div = document.createElement('div'); 
+                            div.className = `entity mob-anim en-${en.typeId} ${en.isElite ? 'elite' : ''}`; 
+                            cell.appendChild(div);
                         }
-                    } else {
-                        cell.classList.add('dark');
-                    }
-                } else {
-                    cell.classList.add('w');
-                }
+                    } else { cell.classList.add('dark'); }
+                } else { cell.classList.add('w'); }
                 grid.appendChild(cell);
             }
         }
@@ -483,84 +536,61 @@
     }
 
     function updateMinimap() {
-        const cvs = document.getElementById('minimap');
-        const ctx = cvs.getContext('2d');
-        const s = cvs.width / SIZE;
+        const cvs = document.getElementById('minimap'); const ctx = cvs.getContext('2d'); const s = cvs.width / SIZE;
         ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cvs.width, cvs.height);
-        
-        for(let y=0; y<SIZE; y++) {
-            for(let x=0; x<SIZE; x++) {
-                if(explored[y][x]) {
-                    if(map[y][x] === 'empty') ctx.fillStyle = '#222';
-                    else if(map[y][x] === 'w' || map[y][x] === 's') ctx.fillStyle = '#555';
-                    else if(map[y][x] === 'd') ctx.fillStyle = '#6e4b39';
-                    else if(map[y][x] === 'stair_down') ctx.fillStyle = '#00ffff'; // 樓梯超亮光點
-                    else if(map[y][x] === 'merchant' || map[y][x] === 'campfire') ctx.fillStyle = '#f1c40f';
-                    else ctx.fillStyle = '#888'; 
-                    ctx.fillRect(x*s, y*s, s, s);
-                }
+        for(let y=0; y<SIZE; y++) for(let x=0; x<SIZE; x++) {
+            if(explored[y][x]) {
+                if(map[y][x] === 'empty') ctx.fillStyle = '#222';
+                else if(map[y][x] === 'w' || map[y][x].startsWith('s')) ctx.fillStyle = '#555';
+                else if(map[y][x] === 'd') ctx.fillStyle = '#6e4b39';
+                else if(map[y][x] === 'stair_down') ctx.fillStyle = '#00ffff'; 
+                else if(map[y][x] === 'merchant' || map[y][x] === 'campfire') ctx.fillStyle = '#f1c40f';
+                else ctx.fillStyle = '#888'; 
+                ctx.fillRect(x*s, y*s, s, s);
             }
         }
-        
-        enemies.forEach(e => {
-            if(e.hp > 0 && explored[e.y][e.x]) {
-                ctx.fillStyle = '#e74c3c'; ctx.fillRect(e.x*s, e.y*s, s, s);
-            }
-        });
-        
+        enemies.forEach(e => { if(e.hp > 0 && explored[e.y][e.x]) { ctx.fillStyle = e.isElite ? '#f1c40f' : '#e74c3c'; ctx.fillRect(e.x*s, e.y*s, s, s); }});
         ctx.fillStyle = '#2ecc71'; ctx.fillRect(p.x*s, p.y*s, s, s); 
     }
 
-    // --- 互動與移動 ---
     function move(dx, dy) {
         if(inBattle || p.hp <= 0) return;
-        
         let nx = p.x + dx, ny = p.y + dy;
         if (nx<0 || nx>=SIZE || ny<0 || ny>=SIZE) return;
         
         let hitEn = enemies.find(e => e.hp > 0 && e.x === nx && e.y === ny);
         if (hitEn) { stopMove({classList:{remove:()=>0}}); startBattle(hitEn); return; }
 
-        let tile = map[ny][nx];
-        if (tile === 'w') return;
-
+        let tile = map[ny][nx]; if (tile === 'w') return;
         let action = false;
 
-        if (tile === 'empty') {
-            p.x = nx; p.y = ny; action = true;
+        if (tile === 'empty') { p.x = nx; p.y = ny; action = true;
         } else if (tile === 'stair_down') {
-            stopMove({classList:{remove:()=>0}});
-            p.floor++; action = true;
-            showMsg("前往下一層", `你深入了地底，來到了第 ${p.floor} 層。`, () => generateFloor());
-            return;
-        } else if (tile === 'merchant') {
-            stopMove({classList:{remove:()=>0}});
-            openMerchant('sell'); return;
-        } else if (tile === 'campfire') {
-            stopMove({classList:{remove:()=>0}});
-            handleCampfire(); return;
+            stopMove({classList:{remove:()=>0}}); p.floor++; action = true;
+            showMsg("前往下一層", `你深入了地底，來到了第 ${p.floor} 層。`, () => generateFloor()); return;
+        } else if (tile === 'merchant') { stopMove({classList:{remove:()=>0}}); openMerchant('sell'); return;
+        } else if (tile === 'campfire') { stopMove({classList:{remove:()=>0}}); handleCampfire(); return;
         } else {
             let req = getReqPick(tile);
             if (p.gear.pick >= req) {
-                if (tile === 's') {
+                if (tile.startsWith('s')) {
                     if (Math.random() < 0.4) {
-                        let gain = 1 + Math.floor(Math.random() * 2);
-                        p.inv.coins += gain;
-                        showFloatText(`金幣+${gain}`, nx, ny, "#f1c40f");
+                        // 金幣數量隨樓層加深大幅增加
+                        let baseGain = 1 + Math.floor(Math.random() * 3);
+                        let mult = Math.max(1, Math.floor(p.floor / 3));
+                        let gain = baseGain * mult;
+                        p.inv.coins += gain; showFloatText(`金幣+${gain}`, nx, ny, "#f1c40f");
                     }
                 } else {
                     let ore = getOreData(tile);
                     if (ore) { 
-                        let bonus = Math.max(0, p.gear.pick - ore.req);
-                        let amount = 1 + bonus;
-                        p.inv[ore.id] += amount; 
-                        showFloatText(`${ore.n}+${amount}`, nx, ny, ore.c); 
+                        let bonus = Math.max(0, p.gear.pick - ore.req); let amount = 1 + bonus;
+                        p.inv[ore.id] += amount; showFloatText(`${ore.n}+${amount}`, nx, ny, ore.c); 
                     }
                     else if (tile.startsWith('L')) {
                         let id = parseInt(tile.substring(1));
                         if (!p.inv.legends.includes(id)) {
-                            p.inv.legends.push(id);
-                            let leg = LEGENDS.find(l=>l.id===id);
+                            p.inv.legends.push(id); let leg = LEGENDS.find(l=>l.id===id);
                             showMsg("傳說發現！", `挖到了 <span style="color:${leg.c}; font-weight:bold;">${leg.n}</span>！<br>進度：${p.inv.legends.length}/7`);
                         }
                     }
@@ -568,46 +598,31 @@
                 map[ny][nx] = 'empty'; action = true;
             } else {
                 stopMove({classList:{remove:()=>0}});
-                showFloatText("十字鎬等級不足", nx, ny, "#e74c3c");
+                let hardMsg = tile==='s3'?"需要 Lv3 十字鎬":tile==='s4'?"需要 Lv4 十字鎬":"十字鎬等級不足";
+                showFloatText(hardMsg, nx, ny, "#e74c3c");
             }
         }
 
-        if (action) {
-            moveEnemies();
-            checkEnemyCollision(); 
-            updateUI();
-            if (!inBattle) drawView();
-        }
+        if (action) { moveEnemies(); checkEnemyCollision(); updateUI(); if (!inBattle) drawView(); }
     }
 
     function moveEnemies() {
         enemies.forEach(e => {
             if(e.hp <= 0) return;
-            if(Math.abs(e.x - p.x) > p.gear.lamp+3 || Math.abs(e.y - p.y) > p.gear.lamp+3) return; // 稍微拉遠追蹤距離
-
+            if(Math.abs(e.x - p.x) > p.gear.lamp+3 || Math.abs(e.y - p.y) > p.gear.lamp+3) return;
             let dx = 0, dy = 0;
-            if (e.x === p.x) dy = p.y > e.y ? 1 : -1;
-            else if (e.y === p.y) dx = p.x > e.x ? 1 : -1;
-            else {
-                if (Math.random() > 0.4) { dx = Math.random()>0.5?1:-1; } 
-                else { dy = Math.random()>0.5?1:-1; }
-            }
+            if (e.x === p.x) dy = p.y > e.y ? 1 : -1; else if (e.y === p.y) dx = p.x > e.x ? 1 : -1;
+            else { if (Math.random() > 0.4) dx = Math.random()>0.5?1:-1; else dy = Math.random()>0.5?1:-1; }
 
             let nx = e.x + dx, ny = e.y + dy;
-            
             if (nx === p.x && ny === p.y) { e.x = nx; e.y = ny; } 
-            else if (map[ny][nx] === 'empty' && !enemies.some(other => other.hp > 0 && other.x === nx && other.y === ny)) {
-                e.x = nx; e.y = ny;
-            }
+            else if (map[ny][nx] === 'empty' && !enemies.some(other => other.hp > 0 && other.x === nx && other.y === ny)) { e.x = nx; e.y = ny; }
         });
     }
 
     function checkEnemyCollision() {
         let hit = enemies.find(e => e.hp > 0 && e.x === p.x && e.y === p.y);
-        if (hit && !inBattle) {
-            stopMove({classList:{remove:()=>0}});
-            startBattle(hit);
-        }
+        if (hit && !inBattle) { stopMove({classList:{remove:()=>0}}); startBattle(hit); }
     }
 
     function showFloatText(text, mx, my, color) {
@@ -617,16 +632,14 @@
             const grid = document.getElementById('grid');
             if(grid.children[cy * VIEW_SIZE + cx]) {
                 const r = grid.children[cy * VIEW_SIZE + cx].getBoundingClientRect();
-                const popup = document.createElement('div');
-                popup.className = 'dmg-popup'; popup.innerText = text;
+                const popup = document.createElement('div'); popup.className = 'dmg-popup'; popup.innerText = text;
                 popup.style.left = (r.left) + 'px'; popup.style.top = r.top + 'px'; popup.style.color = color; popup.style.fontSize = '18px';
-                document.body.appendChild(popup);
-                setTimeout(()=>popup.remove(), 800);
+                document.body.appendChild(popup); setTimeout(()=>popup.remove(), 800);
             }
         }
     }
 
-    // --- 據點與經濟系統 ---
+    // --- 商人與裝備 ---
     function openMerchant(tab) {
         let html = `
             <div style="display:flex; margin-bottom:15px; border-radius:6px; overflow:hidden;">
@@ -644,97 +657,87 @@
                     hasOre = true;
                     html += `
                     <div style="background:#2a2a2a; border:1px solid #444; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                        <div><span style="color:${o.c}">${o.n}</span> x${p.inv[o.id]}</div>
-                        <button onclick="trade('sell', '${o.id}', ${o.val})" style="padding:6px 12px; font-size:12px; background:#e67e22;">賣出 (+${o.val}金幣)</button>
+                        <div><span style="color:${o.c}; background:${o.bg}; padding:2px 4px; border-radius:3px;">${o.n}</span> x${p.inv[o.id]}</div>
+                        <button onclick="trade('sell', '${o.id}', ${o.val})" style="padding:6px 12px; font-size:12px; background:#e67e22;">賣出 (+${o.val})</button>
                     </div>`;
                 }
             });
-            if(!hasOre) html += `<div style="text-align:center; color:#888; padding:20px;">你的背包沒有可以賣的礦石。</div>`;
+            if(!hasOre) html += `<div style="text-align:center; color:#888; padding:20px;">背包沒有可以賣的礦石。</div>`;
         } else {
-            // 大幅擴充技能與道具
-            const shopItems = [
-                { id: 'potion', n: '回復藥水', desc: '恢復 50 HP', cost: 15, c: '#2ecc71', type: 'item' },
-                { id: 'mp_potion', n: '魔力藥水', desc: '恢復 30 MP', cost: 10, c: '#3498db', type: 'item' },
-                { id: 's_cleave', n: '技能卷軸：旋風斬', desc: '強大攻擊 (耗MP:20)', cost: 80, c: '#e74c3c', type: 'skill', s: {id:'s_cleave', n:'旋風斬', cost:20, pwr:2.2, type:'atk'} },
-                { id: 's_vamp', n: '技能卷軸：吸血打擊', desc: '攻擊並回復50%傷害 (耗MP:15)', cost: 120, c: '#9b59b6', type: 'skill', s: {id:'s_vamp', n:'吸血打擊', cost:15, pwr:1.2, type:'atk_heal'} },
-                { id: 's_fire', n: '技能卷軸：烈火球', desc: '極高傷害魔法 (耗MP:30)', cost: 180, c: '#e67e22', type: 'skill', s: {id:'s_fire', n:'烈火球', cost:30, pwr:3.0, type:'atk'} },
-                { id: 's_heal2', n: '技能卷軸：聖光術', desc: '大幅回復生命 (耗MP:35)', cost: 200, c: '#f1c40f', type: 'skill', s: {id:'s_heal2', n:'聖光術', cost:35, heal:120, type:'heal'} },
-                { id: 's_smash', n: '技能卷軸：大地粉碎', desc: '毀滅性打擊 (耗MP:45)', cost: 300, c: '#8e44ad', type: 'skill', s: {id:'s_smash', n:'大地粉碎', cost:45, pwr:4.5, type:'atk'} }
+            // 固定商品
+            const baseItems = [
+                { id: 'potion', n: 'HP 回復藥水', desc: '恢復 50 HP', cost: 15, c: '#2ecc71', type: 'item' },
+                { id: 'mp_potion', n: 'MP 回力藥水', desc: '恢復 30 MP', cost: 10, c: '#3498db', type: 'item' }
             ];
 
-            shopItems.forEach(item => {
-                let isLearned = item.type === 'skill' && p.skills.some(sk => sk.id === item.id);
+            let displayItems = [...baseItems, ...p.shopSkills];
+
+            displayItems.forEach(item => {
+                let isLearned = item.type !== 'item' && p.skills.some(sk => sk.id === item.id);
                 if(isLearned) return; 
                 
-                let canBuy = p.inv.coins >= item.cost;
+                let cost = item.cost || item.price; // 修正屬性名
+                let canBuy = p.inv.coins >= cost;
                 html += `
                 <div style="background:#2a2a2a; border:1px solid #444; padding:10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="color:${item.c}; font-weight:bold; margin-bottom:4px;">${item.n}</div>
-                        <div style="font-size:11px; color:#aaa;">${item.desc}</div>
+                    <div style="width:70%;">
+                        <div style="color:${item.c || '#f1c40f'}; font-weight:bold; margin-bottom:4px;">${item.n}</div>
+                        <div style="font-size:11px; color:#aaa;">${item.desc} ${item.type!=='item'?`(耗MP:${item.cost})`:''}</div>
                     </div>
-                    <button onclick="trade('buy', '${item.id}', ${item.cost}, ${JSON.stringify(item.s || {}).replace(/"/g,"'")})" style="padding:6px 12px; font-size:12px; background:#27ae60;" ${canBuy?'':'disabled'}>${item.cost} 金幣</button>
+                    <button onclick="trade('buy', '${item.id}', ${cost}, ${JSON.stringify(item).replace(/"/g,"'")})" style="padding:6px 12px; font-size:12px; background:#27ae60;" ${canBuy?'':'disabled'}>${cost} 金幣</button>
                 </div>`;
             });
         }
-        
         html += `</div>`;
         showCustomModal("地底商人", html, [{t:"離開", f:closeMsg}]);
     }
 
     function trade(action, id, val, skillObj=null) {
-        if (action === 'sell') {
-            if(p.inv[id] > 0) {
-                p.inv[id]--; p.inv.coins += val;
-                openMerchant('sell');
-            }
-        } else if (action === 'buy') {
-            if(p.inv.coins >= val) {
-                if(id === 'potion') { p.inv.coins -= val; p.inv.potions++; }
-                else if(id === 'mp_potion') { p.inv.coins -= val; p.mp = Math.min(p.mMp, p.mp+30); }
-                else if(skillObj && skillObj.id) { 
-                    p.inv.coins -= val; 
-                    p.skills.push(skillObj); 
-                    showMsg("技能學習", `你學會了 ${skillObj.n}！`);
-                }
-                if(document.getElementById('msg-box').style.display !== 'none') openMerchant('buy');
-            }
+        if (action === 'sell' && p.inv[id] > 0) { p.inv[id]--; p.inv.coins += val; openMerchant('sell'); } 
+        else if (action === 'buy' && p.inv.coins >= val) {
+            p.inv.coins -= val;
+            if(id === 'potion') p.inv.potions++;
+            else if(id === 'mp_potion') p.inv.mp_potions++;
+            else if(skillObj) { p.skills.push(skillObj); showMsg("技能學習", `你學會了 ${skillObj.n}！`); }
+            if(document.getElementById('msg-box').style.display !== 'none') openMerchant('buy');
         }
         updateUI();
     }
 
     function handleCampfire() {
-        if(campfireBuilt) {
-            p.hp = p.mHp; p.mp = p.mMp; updateUI();
-            showMsg("營火休息", "在溫暖的營火旁休息，HP與MP已完全恢復！");
+        if(campfireBuilt) { p.hp = p.mHp; p.mp = p.mMp; updateUI(); showMsg("營火休息", "狀態已完全恢復！");
         } else {
-            let costCoal = 5;
-            let canBuild = p.inv.coal >= costCoal;
-            let html = `建立營火可以永久在此樓層恢復全部狀態。<br><br>需要：煤炭 x${costCoal}<br>擁有：煤炭 x${p.inv.coal}`;
-            showCustomModal("廢棄營地", html, [
-                {t:"建立", f:()=>{
-                    if(canBuild) { p.inv.coal -= costCoal; campfireBuilt = true; handleCampfire(); }
-                    else showMsg("材料不足", "沒有足夠的煤炭！");
-                }},
+            let costCoal = 10;
+            showCustomModal("廢棄營地", `建立營火可永久在此樓層恢復全部狀態。<br><br>需要：煤炭 x${costCoal}<br>擁有：煤炭 x${p.inv.coal}`, [
+                {t:"建立", f:()=>{ if(p.inv.coal >= costCoal) { p.inv.coal -= costCoal; campfireBuilt = true; handleCampfire(); } else showMsg("材料不足", "沒有足夠的煤炭！"); }},
                 {t:"離開", f:closeMsg}
             ]);
         }
     }
 
     function openCraft() {
-        let html = `<div style="text-align:center; color:#bbb; font-size:13px; margin-bottom:10px;">裝備升級需求會隨等級提升</div>`;
+        let html = `<div style="text-align:center; color:#bbb; font-size:13px; margin-bottom:10px;">升級需消耗大量基礎礦石以突破極限！</div>`;
         
+        // 十字鎬：大幅修改需求，降低初期對水晶的依賴，增加基礎礦數量
         let pReq = [];
-        if(p.gear.pick === 1) pReq = [{n:'銅礦',k:'copper',c:5}, {n:'煤炭',k:'coal',c:5}];
-        else if(p.gear.pick === 2) pReq = [{n:'鐵礦',k:'iron',c:5}, {n:'煤炭',k:'coal',c:10}];
-        else if(p.gear.pick === 3) pReq = [{n:'銀礦',k:'silver',c:5}, {n:'煤炭',k:'coal',c:15}];
-        else pReq = [{n:'金礦',k:'gold',c:5}, {n:'水晶',k:'crystal',c:5}];
-        html += getUpgradeHtml("十字鎬", p.gear.pick, pReq, 'pick', "可挖更硬的岩石，並增加低階礦石產量");
+        if(p.gear.pick === 1) pReq = [{n:'銅礦',k:'copper',c:15}, {n:'煤炭',k:'coal',c:20}];
+        else if(p.gear.pick === 2) pReq = [{n:'鐵礦',k:'iron',c:30}, {n:'銅礦',k:'copper',c:30}, {n:'煤炭',k:'coal',c:40}];
+        else if(p.gear.pick === 3) pReq = [{n:'銀礦',k:'silver',c:40}, {n:'鐵礦',k:'iron',c:40}, {n:'煤炭',k:'coal',c:60}];
+        else if(p.gear.pick === 4) pReq = [{n:'金礦',k:'gold',c:50}, {n:'銀礦',k:'silver',c:60}, {n:'素材',k:'mat',c:20}];
+        else pReq = [{n:'水晶',k:'crystal',c:30}, {n:'金礦',k:'gold',c:80}, {n:'素材',k:'mat',c:50}];
+        html += getUpgradeHtml("十字鎬", p.gear.pick, pReq, 'pick', "可挖更硬的岩石");
 
-        let lReq = p.gear.lamp === 1 ? [{n:'銅礦',k:'copper',c:5}, {n:'煤炭',k:'coal',c:5}] : [{n:'銀礦',k:'silver',c:5}, {n:'水晶',k:'crystal',c:2}];
-        html += getUpgradeHtml("油燈", p.gear.lamp, lReq, 'lamp', "擴大黑暗中的探索視野");
+        let lReq = [];
+        if(p.gear.lamp === 1) lReq = [{n:'銅礦',k:'copper',c:20}, {n:'煤炭',k:'coal',c:20}];
+        else if(p.gear.lamp === 2) lReq = [{n:'鐵礦',k:'iron',c:40}, {n:'煤炭',k:'coal',c:50}];
+        else lReq = [{n:'銀礦',k:'silver',c:50}, {n:'水晶',k:'crystal',c:10}];
+        html += getUpgradeHtml("油燈", p.gear.lamp, lReq, 'lamp', "擴大視野");
 
-        let sReq = p.gear.sword === 1 ? [{n:'銅礦',k:'copper',c:5}, {n:'素材',k:'mat',c:3}] : [{n:'鐵礦',k:'iron',c:10}, {n:'素材',k:'mat',c:10}];
+        let sReq = [];
+        if(p.gear.sword === 1) sReq = [{n:'銅礦',k:'copper',c:20}, {n:'素材',k:'mat',c:5}];
+        else if(p.gear.sword === 2) sReq = [{n:'鐵礦',k:'iron',c:40}, {n:'素材',k:'mat',c:15}];
+        else if(p.gear.sword === 3) sReq = [{n:'銀礦',k:'silver',c:60}, {n:'素材',k:'mat',c:30}];
+        else sReq = [{n:'金礦',k:'gold',c:80}, {n:'素材',k:'mat',c:60}];
         html += getUpgradeHtml("鐵劍", p.gear.sword, sReq, 'sword', "提升基礎攻擊力");
 
         showCustomModal("裝備鍛造", html, [{t:"關閉", f:closeMsg}]);
@@ -745,7 +748,7 @@
         let reqTxt = reqs.map(r => `${r.n} x${r.c}`).join(', ');
         return `
         <div style="background:#2a2a2a; border:1px solid #444; padding:10px; margin-bottom:8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
+            <div style="width:75%;">
                 <div style="font-weight:bold; color:#f1c40f; margin-bottom:4px;">${name} Lv.${lv} ➔ ${lv+1}</div>
                 <div style="font-size:11px; color:${can?'#bdc3c7':'#e74c3c'}">需求: ${reqTxt}</div>
                 <div style="font-size:10px; color:#888;">${desc}</div>
@@ -754,29 +757,16 @@
         </div>`;
     }
 
-    function doUpgrade(type, reqs) {
-        reqs.forEach(r => p.inv[r.k] -= r.c);
-        p.gear[type]++;
-        updateUI(); drawView(); openCraft();
-    }
-
-    function getSvgIcon(color, bg, type='ore') {
-        let c = color.replace('#', '');
-        let b = bg ? bg.replace('#', '') : '7f8c8d';
-        if(type==='ore') return `<div style="width:24px; height:24px; margin:0 auto; background-color:#${b}; border-radius:4px; box-shadow: inset 0 0 4px rgba(0,0,0,0.8); background-image:url('data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 8 8\\'%3E%3Crect x=\\'1\\' y=\\'1\\' width=\\'2\\' height=\\'2\\' fill=\\'%23${c}\\'/%3E%3Crect x=\\'5\\' y=\\'2\\' width=\\'2\\' height=\\'2\\' fill=\\'%23${c}\\'/%3E%3Crect x=\\'2\\' y=\\'5\\' width=\\'3\\' height=\\'2\\' fill=\\'%23${c}\\'/%3E%3C/svg%3E');"></div>`;
-        if(type==='mat') return `<div style="width:24px; height:24px; margin:0 auto; background-color:#8e44ad; border-radius:50%; box-shadow: inset 0 0 6px rgba(0,0,0,0.8); border: 2px dashed #9b59b6;"></div>`;
-        if(type==='pot') return `<div style="width:24px; height:24px; margin:0 auto; background-color:#2ecc71; border-radius:3px 3px 10px 10px; border-top: 5px solid #bdc3c7; box-shadow: 0 2px 0 #27ae60;"></div>`;
-        if(type==='coin') return `<div style="width:24px; height:24px; margin:0 auto; background-image:url('data:image/svg+xml,%3Csvg viewBox=\\'0 0 8 8\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Ccircle cx=\\'4\\' cy=\\'4\\' r=\\'4\\' fill=\\'%23f1c40f\\'/%3E%3Ccircle cx=\\'4\\' cy=\\'4\\' r=\\'2\\' fill=\\'%23f39c12\\'/%3E%3C/svg%3E');"></div>`;
-    }
+    function doUpgrade(type, reqs) { reqs.forEach(r => p.inv[r.k] -= r.c); p.gear[type]++; updateUI(); drawView(); openCraft(); }
 
     function openStatus() {
         let invHtml = `<div class="inv-grid">`;
         Object.values(ORES).forEach(o => { 
-            invHtml += `<div class="inv-item">${getSvgIcon(o.c, o.bg, 'ore')}<div style="color:${o.c}; margin-top:4px;">${o.n}</div>x${p.inv[o.id]}</div>`; 
+            invHtml += `<div class="inv-item"><div style="width:24px; height:24px; margin:0 auto; background-color:${o.bg}; border-radius:4px; box-shadow: inset 0 0 4px rgba(0,0,0,0.8); border: 2px solid ${o.c};"></div><div style="color:${o.c}; margin-top:4px;">${o.n}</div>x${p.inv[o.id]}</div>`; 
         });
-        invHtml += `<div class="inv-item">${getSvgIcon('','','mat')}<div style="color:#e74c3c; margin-top:4px;">素材</div>x${p.inv.mat}</div>`;
-        invHtml += `<div class="inv-item">${getSvgIcon('','','pot')}<div style="color:#2ecc71; margin-top:4px;">藥水</div>x${p.inv.potions}</div>`;
-        invHtml += `<div class="inv-item">${getSvgIcon('','','coin')}<div style="color:#f1c40f; margin-top:4px;">金幣</div>x${p.inv.coins}</div>`;
+        invHtml += `<div class="inv-item"><div style="color:#e74c3c; margin-top:4px; font-weight:bold;">素材</div>x${p.inv.mat}</div>`;
+        invHtml += `<div class="inv-item"><div style="color:#2ecc71; margin-top:4px; font-weight:bold;">HP藥</div>x${p.inv.potions}</div>`;
+        invHtml += `<div class="inv-item"><div style="color:#3498db; margin-top:4px; font-weight:bold;">MP藥</div>x${p.inv.mp_potions}</div>`;
         invHtml += `</div>`;
 
         let legHtml = `<div style="margin-top:10px; display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">`;
@@ -789,12 +779,10 @@
         let html = `
             <div style="font-size:14px; line-height:1.8;">
                 <div style="display:flex; justify-content:space-around; background:#222; padding:10px; border-radius:6px; margin-bottom:10px;">
-                    <div>十字鎬: Lv.${p.gear.pick}</div>
-                    <div>油燈: Lv.${p.gear.lamp}</div>
+                    <div>十字鎬: Lv.${p.gear.pick}</div><div>油燈: Lv.${p.gear.lamp}</div>
                 </div>
                 <div style="display:flex; justify-content:space-around; background:#222; padding:10px; border-radius:6px; margin-bottom:10px;">
-                    <div>攻擊力: ${p.baseAtk + p.gear.sword*5}</div>
-                    <div>防禦力: ${p.baseDef}</div>
+                    <div>攻擊力: ${p.baseAtk + p.gear.sword*5}</div><div>防禦力: ${p.baseDef}</div>
                 </div>
                 <div style="color:#f1c40f; font-weight:bold; border-bottom:1px solid #444; padding-bottom:4px;">背包道具</div>
                 ${invHtml}
@@ -805,11 +793,15 @@
         showCustomModal("礦工狀態", html, [{t:"關閉", f:closeMsg}]);
     }
 
-    // --- 戰鬥與升級系統 ---
+    // --- 戰鬥 ---
     function startBattle(enemy) {
         inBattle = true; currentEnemy = enemy;
         document.getElementById('log').innerHTML = "";
-        addLog(`遭遇了地底怪物！(HP: ${enemy.hp})`, "#e74c3c");
+        
+        let spriteDiv = document.getElementById('enemy-sprite');
+        spriteDiv.className = `sprite mob-anim en-${enemy.typeId} ${enemy.isElite ? 'elite' : ''}`;
+        
+        addLog(`遭遇了 ${enemy.name}！(HP: ${enemy.hp})`, enemy.isElite ? "#f1c40f" : "#e74c3c");
         showScreen('battle-sc'); updateBattleUI();
     }
 
@@ -834,16 +826,16 @@
                 let dmg = Math.floor((p.baseAtk + p.gear.sword*5) * skill.pwr);
                 let healAmt = Math.floor(dmg * 0.5);
                 p.hp = Math.min(p.mHp, p.hp + healAmt);
-                addLog(`發動 ${skill.n}！造成 ${dmg} 傷害並回復 ${healAmt} HP`, "#9b59b6");
+                addLog(`發動 ${skill.n}！造成 ${dmg} 傷害並吸收 ${healAmt} HP`, "#9b59b6");
                 currentEnemy.hp -= dmg;
                 showDmgVisual(dmg, document.getElementById('enemy-sprite'), '#9b59b6');
                 finishPlayerTurn();
             }
         } else if (type === 'run') {
-            if(Math.random() > 0.4) {
-                addLog("成功逃跑！", "#aaa");
-                setTimeout(()=>{ inBattle=false; showScreen('map-sc'); drawView(); }, 800);
-                return;
+            if(currentEnemy.isElite && Math.random() < 0.7) {
+                addLog("精英怪阻擋了你的去路，逃跑失敗！", "#e74c3c"); finishPlayerTurn();
+            } else if(Math.random() > 0.4) {
+                addLog("成功逃跑！", "#aaa"); setTimeout(()=>{ inBattle=false; showScreen('map-sc'); drawView(); }, 800);
             } else { addLog("逃跑失敗！", "#e74c3c"); finishPlayerTurn(); }
         }
     }
@@ -862,15 +854,41 @@
     }
 
     function openSkills() {
-        let html = p.skills.map((s, i) => `<button onclick="battleAction('skill', p.skills[${i}])" style="width:100%; margin-bottom:8px; padding:10px; background:#2c3e50;">${s.n} (MP: ${s.cost})</button>`).join('');
+        let html = p.skills.map((s, i) => `<button onclick="battleAction('skill', p.skills[${i}])" style="width:100%; margin-bottom:8px; padding:10px; background:#2c3e50; border-bottom:3px solid #1a252f;">${s.n} (耗MP: ${s.cost})</button>`).join('');
         showCustomModal("選擇技能", html, [{t:"取消", f:closeMsg}]);
     }
 
-    function usePotion() {
-        if(p.inv.potions > 0) {
+    function openItems() {
+        let html = `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#222; padding:15px; margin-bottom:10px; border-radius:6px; border-left: 5px solid var(--hp);">
+                <div>HP 回復藥水 (恢復 50 HP)<br><span style="color:#aaa; font-size:12px;">擁有: ${p.inv.potions}</span></div>
+                <button onclick="confirmPotion('hp')" ${p.inv.potions>0?'':'disabled'} style="background:#27ae60; padding:8px 15px; font-size:14px; margin:0;">使用</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#222; padding:15px; border-radius:6px; border-left: 5px solid var(--mp);">
+                <div>MP 回力藥水 (恢復 30 MP)<br><span style="color:#aaa; font-size:12px;">擁有: ${p.inv.mp_potions}</span></div>
+                <button onclick="confirmPotion('mp')" ${p.inv.mp_potions>0?'':'disabled'} style="background:#3498db; padding:8px 15px; font-size:14px; margin:0;">使用</button>
+            </div>
+        `;
+        showCustomModal("使用道具", html, [{t:"取消", f:closeMsg}]);
+    }
+
+    function confirmPotion(type) {
+        closeMsg();
+        let name = type === 'hp' ? "HP 回復藥水" : "MP 回力藥水";
+        showCustomModal("二次確認", `確定要在戰鬥中使用 <span style="color:${type==='hp'?'var(--hp)':'var(--mp)'}; font-weight:bold;">${name}</span> 嗎？`, [
+            {t:"確定使用", f:() => { doUsePotion(type); }},
+            {t:"返回", f:() => { openItems(); }}
+        ]);
+    }
+
+    function doUsePotion(type) {
+        if(type === 'hp' && p.inv.potions > 0) {
             p.inv.potions--; p.hp = Math.min(p.mHp, p.hp + 50);
-            addLog(`使用回復藥水，恢復 50 HP`, "#2ecc71"); finishPlayerTurn();
-        } else { showMsg("道具不足", "你沒有回復藥水了！"); }
+            addLog(`使用 HP 藥水，恢復 50 HP`, "#2ecc71"); finishPlayerTurn();
+        } else if(type === 'mp' && p.inv.mp_potions > 0) {
+            p.inv.mp_potions--; p.mp = Math.min(p.mMp, p.mp + 30);
+            addLog(`使用 MP 藥水，恢復 30 MP`, "#3498db"); finishPlayerTurn();
+        }
     }
 
     function enemyTurn() {
@@ -878,76 +896,50 @@
         let dmg = Math.max(1, currentEnemy.atk - p.baseDef);
         p.hp -= dmg;
         showDmgVisual(dmg, document.getElementById('hp-pl-f').parentElement, '#ff7675');
-        addLog(`怪物攻擊！你受到 ${dmg} 點傷害`, "#ff7675");
+        addLog(`${currentEnemy.name} 攻擊！你受到 ${dmg} 點傷害`, "#ff7675");
         updateBattleUI();
 
         if (p.hp <= 0) setTimeout(() => showMsg("遊戲結束", `你倒在了第 ${p.floor} 層...<br>收集傳說：${p.inv.legends.length}/7<br>最終等級：Lv.${p.lv}`, () => location.reload()), 1000);
     }
 
     function winBattle() {
-        let matGain = 1 + Math.floor(currentEnemy.maxHp / 40);
-        let expGain = Math.floor(currentEnemy.maxHp * 0.5);
-        let coinGain = Math.floor(Math.random() * 5) + p.floor;
+        let matGain = 1 + Math.floor(currentEnemy.maxHp / 40) + (currentEnemy.isElite ? 3 : 0);
+        let expGain = Math.floor(currentEnemy.maxHp * 0.5) * (currentEnemy.isElite ? 2 : 1);
+        let coinGain = Math.floor(Math.random() * 5) + p.floor + (currentEnemy.isElite ? 20 : 0);
         
-        p.inv.mat += matGain; 
-        p.inv.coins += coinGain;
-        p.mp = Math.min(p.mMp, p.mp + 5); 
-        p.exp += expGain;
+        p.inv.mat += matGain; p.inv.coins += coinGain; p.mp = Math.min(p.mMp, p.mp + 5); p.exp += expGain;
 
-        let msg = `打倒了怪物！<br>獲得 素材 x${matGain}、金幣 x${coinGain}<br>獲得 ${expGain} 經驗值`;
+        let msg = `打倒了 ${currentEnemy.name}！<br>獲得 素材 x${matGain}、金幣 x${coinGain}<br>獲得 ${expGain} 經驗值`;
         
-        // 檢查升級
         if (p.exp >= p.maxExp) {
-            p.exp -= p.maxExp;
-            p.lv++;
-            p.maxExp = Math.floor(p.maxExp * 1.5);
-            p.mHp += 15; p.mMp += 10; p.baseAtk += 3; p.baseDef += 2;
-            p.hp = p.mHp; p.mp = p.mMp;
+            p.exp -= p.maxExp; p.lv++; p.maxExp = Math.floor(p.maxExp * 1.5);
+            p.mHp += 15; p.mMp += 10; p.baseAtk += 4; p.baseDef += 3; p.hp = p.mHp; p.mp = p.mMp;
             msg += `<br><br><span style="color:#f1c40f; font-weight:bold; font-size:16px;">恭喜升級至 Lv.${p.lv}！</span><br>狀態已完全恢復，各項能力提升！`;
         }
-
-        showMsg("戰鬥勝利", msg, () => {
-            inBattle = false; updateUI(); showScreen('map-sc'); drawView();
-        });
+        showMsg("戰鬥勝利", msg, () => { inBattle = false; updateUI(); showScreen('map-sc'); drawView(); });
     }
 
-    // --- UI 與通用 ---
+    // --- UI 更新 ---
     function updateUI() {
-        document.getElementById('ui-fl').innerText = p.floor;
-        document.getElementById('ui-lv').innerText = p.lv;
-        document.getElementById('ui-exp').innerText = `${p.exp}/${p.maxExp}`;
-        document.getElementById('ui-coin').innerText = p.inv.coins;
+        document.getElementById('ui-fl').innerText = p.floor; document.getElementById('ui-lv').innerText = p.lv;
+        document.getElementById('ui-exp').innerText = `${p.exp}/${p.maxExp}`; document.getElementById('ui-coin').innerText = p.inv.coins;
         
-        let hpPct = Math.max(0, p.hp) / p.mHp * 100;
-        let mpPct = Math.max(0, p.mp) / p.mMp * 100;
-        document.getElementById('ui-hp-bar').style.width = hpPct + "%";
-        document.getElementById('ui-hp-txt').innerText = `${Math.max(0,p.hp)}/${p.mHp}`;
-        document.getElementById('ui-mp-bar').style.width = mpPct + "%";
-        document.getElementById('ui-mp-txt').innerText = `${Math.max(0,p.mp)}/${p.mMp}`;
+        document.getElementById('ui-hp-bar').style.width = (Math.max(0, p.hp)/p.mHp*100) + "%"; document.getElementById('ui-hp-txt').innerText = `${Math.max(0,p.hp)}/${p.mHp}`;
+        document.getElementById('ui-mp-bar').style.width = (Math.max(0, p.mp)/p.mMp*100) + "%"; document.getElementById('ui-mp-txt').innerText = `${Math.max(0,p.mp)}/${p.mMp}`;
     }
 
     function updateBattleUI() {
         if(!currentEnemy) return;
-        document.getElementById('hp-en-f').style.width = (Math.max(0,currentEnemy.hp)/currentEnemy.maxHp*100)+"%";
-        document.getElementById('txt-en-hp').innerText = `地底怪物 HP: ${Math.max(0,currentEnemy.hp)}`;
-        document.getElementById('hp-pl-f').style.width = (Math.max(0,p.hp)/p.mHp*100)+"%";
-        document.getElementById('val-pl-hp').innerText = `${Math.max(0,p.hp)}/${p.mHp}`;
-        document.getElementById('mp-pl-f').style.width = (Math.max(0,p.mp)/p.mMp*100)+"%";
-        document.getElementById('val-pl-mp').innerText = `${Math.max(0,p.mp)}/${p.mMp}`;
+        document.getElementById('hp-en-f').style.width = (Math.max(0,currentEnemy.hp)/currentEnemy.maxHp*100)+"%"; document.getElementById('txt-en-hp').innerText = `${currentEnemy.name} HP: ${Math.max(0,currentEnemy.hp)}`;
+        document.getElementById('hp-pl-f').style.width = (Math.max(0,p.hp)/p.mHp*100)+"%"; document.getElementById('val-pl-hp').innerText = `${Math.max(0,p.hp)}/${p.mHp}`;
+        document.getElementById('mp-pl-f').style.width = (Math.max(0,p.mp)/p.mMp*100)+"%"; document.getElementById('val-pl-mp').innerText = `${Math.max(0,p.mp)}/${p.mMp}`;
         updateUI();
     }
 
     function showCustomModal(title, html, btns) {
-        document.getElementById('msg-title').innerText = title;
-        document.getElementById('msg-content').innerHTML = html;
-        const btnArea = document.getElementById('msg-btns');
-        btnArea.innerHTML = '';
-        if(btns) {
-            btns.forEach(b => {
-                let btn = document.createElement('button'); btn.innerText = b.t; btn.onclick = () => { closeMsg(); b.f(); };
-                btnArea.appendChild(btn);
-            });
-        }
+        document.getElementById('msg-title').innerText = title; document.getElementById('msg-content').innerHTML = html;
+        const btnArea = document.getElementById('msg-btns'); btnArea.innerHTML = '';
+        if(btns) { btns.forEach(b => { let btn = document.createElement('button'); btn.innerText = b.t; btn.onclick = () => { closeMsg(); b.f(); }; btnArea.appendChild(btn); }); }
         document.getElementById('msg-box').style.display='flex';
     }
     function showMsg(title, txt, cb) { showCustomModal(title, txt, [{t:"確定", f: cb || (()=>{}) }]); }
