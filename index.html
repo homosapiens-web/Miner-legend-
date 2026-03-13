@@ -153,6 +153,7 @@
         .arrow-right { width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 20px solid #ecf0f1; display: inline-block; }
         /* 探索度文字 */
         #explore-pct { position: absolute; top: 80px; right: 6px; font-size: 9px; color: #aaa; font-weight: bold; text-align: center; width: 65px; }
+        .dmg-popup { position: absolute; font-weight: bold; font-size: 24px; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 9999; text-shadow: 2px 2px 0 #000; }
         @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-50px); opacity: 0; } }
         .shake { animation: shake 0.2s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
@@ -329,6 +330,7 @@
             ]);
         }
     }
+    const SIZE = 30; 
     const VIEW_SIZE = 11;
     let map = []; 
     let explored = [];
@@ -623,20 +625,22 @@
                     if (p.mineMode === 'v6') tilesToMine = [{x:nx-1,y:ny-1},{x:nx-1,y:ny},{x:nx-1,y:ny+1},{x:nx,y:ny-1},{x:nx,y:ny},{x:nx,y:ny+1}];
                 }
                 let dug = false;
+                let preX = p.x, preY = p.y; // 記錄挖礦前的位置，讓浮字顯示正確
                 tilesToMine.forEach(({x:tx,y:ty}) => {
                     if(tx<0||tx>=SIZE||ty<0||ty>=SIZE) return;
                     let t2 = map[ty][tx]; if(t2==='w'||t2==='empty') return;
                     let req2 = getReqPick(t2); if(p.gear.pick < req2) return;
                     if (t2.startsWith('s')) {
-                        if (Math.random() < 0.4) { let baseGain=1+Math.floor(Math.random()*3); let mult=Math.max(1,Math.floor(p.floor/3)); p.inv.coins += baseGain*mult; showFloatText(`金幣+${baseGain*mult}`,tx,ty,"#f1c40f"); }
+                        if (Math.random() < 0.4) { let baseGain=1+Math.floor(Math.random()*3); let mult=Math.max(1,Math.floor(p.floor/3)); p.inv.coins += baseGain*mult; showFloatTextAt(`金幣+${baseGain*mult}`,tx,ty,preX,preY,"#f1c40f"); }
                     } else {
                         let ore = getOreData(t2);
-                        if (ore) { let bonus=Math.max(0,p.gear.pick-ore.req); let amount=1+bonus; p.inv[ore.id]+=amount; showFloatText(`${ore.n}+${amount}`,tx,ty,ore.c); }
+                        if (ore) { let bonus=Math.max(0,p.gear.pick-ore.req); let amount=1+bonus; p.inv[ore.id]+=amount; showFloatTextAt(`${ore.n}+${amount}`,tx,ty,preX,preY,ore.c); }
                         else if (t2.startsWith('L')) { let id=parseInt(t2.substring(1)); if(!p.inv.legends.includes(id)){p.inv.legends.push(id);let leg=LEGENDS.find(l=>l.id===id);showMsg("傳說發現！",`挖到了 <span style="color:${leg.c}; font-weight:bold;">${leg.n}</span>！<br>進度：${p.inv.legends.length}/7`);}}
                     }
                     map[ty][tx] = 'empty'; dug = true;
                 });
-                if(dug) action = true;
+                // 挖完後玩家走進目標格
+                if(dug) { p.x = nx; p.y = ny; action = true; }
             } else {
                 stopMove({classList:{remove:()=>0}});
                 let hardMsg = tile==='s3'?"需要 Lv3 十字鎬":tile==='s4'?"需要 Lv4 十字鎬":"十字鎬等級不足";
@@ -665,9 +669,12 @@
     }
 
     function showFloatText(text, mx, my, color) {
+        showFloatTextAt(text, mx, my, p.x, p.y, color);
+    }
+    function showFloatTextAt(text, mx, my, fromX, fromY, color) {
         let half = Math.floor(VIEW_SIZE / 2);
-        if (Math.abs(mx - p.x) <= half && Math.abs(my - p.y) <= half) {
-            let cx = mx - (p.x - half), cy = my - (p.y - half);
+        if (Math.abs(mx - fromX) <= half && Math.abs(my - fromY) <= half) {
+            let cx = mx - (fromX - half), cy = my - (fromY - half);
             const grid = document.getElementById('grid');
             if(grid.children[cy * VIEW_SIZE + cx]) {
                 const r = grid.children[cy * VIEW_SIZE + cx].getBoundingClientRect();
